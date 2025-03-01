@@ -7,21 +7,25 @@ from src.taxes import calculate_taxes, calculate_tax
 def prices():
     return [100, 200, 300]
 
-@pytest.mark.parametrize('tax_rate, expected', [(10, [110, 220, 330]),
-                                                (15, [115, 230, 345]),
-                                                (20, [120, 240, 360]),])
-def test_calculate_taxes(prices, tax_rate, expected):
-    assert calculate_taxes(prices, tax_rate) == expected
+@pytest.mark.parametrize('tax_rate, expected', [
+    (10, [110, 220, 330]),
+    (15, [115, 230, 345]),
+    (20, [120, 240, 360]),
+])
 
 
-def test_calculate_taxes_invalid_tax_rate(prices):
+def test_calculate_taxes(price, tax_rate, expected):
+    assert calculate_taxes(price, tax_rate,) == expected
+
+
+def test_calculate_taxes_invalid_tax_rate(price):
     with pytest.raises(ValueError):
-        calculate_taxes(prices, -1)
+        calculate_taxes(price, -1)
 
 
 def test_calculate_taxes_invalid_price():
     with pytest.raises(ValueError):
-        calculate_taxes([0, -1], tax_rate=10)
+        calculate_taxes(0, -1)
 
 
 @pytest.mark.parametrize('price, tax_rate, expected', [(100, 10, 110),
@@ -45,3 +49,8 @@ def test_calculate_tax_invalid_tax_rate_after_100():
         calculate_tax(100, 1000)
 
 
+@pytest.mark.parametrize('price, tax_rate, discount, expected', [(100, 10, 0, 110.0),
+                                                                 (100, 10, 10, 99.0),
+                                                                 (100, 10, 100, 0.0),])
+def test_calculate_tax_with_discount(price, tax_rate, discount, expected):
+    assert calculate_tax(price, tax_rate, discount) == expected
